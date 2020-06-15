@@ -70,15 +70,7 @@ def generate_food_block(grid_table):
     return Block(coord[0],coord[1])
 
 def eat_food(user_snake, food_block):
-    is_moving_y = user_snake.dir() < 2
-    is_touching_y = (user_snake.head().ypos()-20 == food_block.ypos() or user_snake.head().ypos() == food_block.ypos()-20) and user_snake.head().xpos() == food_block.xpos()
-    from_y = is_moving_y and is_touching_y
-
-    is_moving_x = user_snake.dir() > 1
-    is_touching_x = (user_snake.head().xpos()-20 == food_block.xpos() or user_snake.head().xpos() == food_block.xpos()-20) and user_snake.head().ypos() == food_block.ypos()
-    from_x = is_moving_x and is_touching_x  
-
-    return from_y or from_x
+    return user_snake.head().ypos() == food_block.ypos() and user_snake.head().xpos() == food_block.xpos()
 
 def main():
     pygame.init()

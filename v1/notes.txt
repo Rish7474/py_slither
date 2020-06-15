@@ -1,0 +1,13 @@
+py_slither: offline snake game
+
+features:
+1) snake game with GUI
+2) A database to local high score
+3) Firebase website to store top 10 high scores
+4) AI mode
+
+High Score Calculation:
+# of food - (time taken to eat * # of food) 
+
+AI mode will most likely use a pathfinding alogrithm where the head
+of the snake is the start point, the food is the end point, and the rest of the snake is the obstacle

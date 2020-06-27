@@ -4,10 +4,38 @@ features:
 1) snake game with GUI
 2) A database to local high score
 3) Firebase website to store top 10 high scores
-4) AI mode
+4) Autononous mode
 
 High Score Calculation:
 # of food - (time taken to eat * # of food) 
 
-AI mode will most likely use a pathfinding alogrithm where the head
+autonomous mode will most likely use a pathfinding alogrithm where the head
 of the snake is the start point, the food is the end point, and the rest of the snake is the obstacle
+
+TODO:
+-Create Scoring System
+  -score = sigma(10000 - time used to eat food)
+  -higher the score number, better the perfromance
+
+-Store local highscore using SQLite in db
+  -display local highscore below game title in main menu
+
+-Create global highscore tracking website
+  -scores stored in a firebase db 
+
+-Display current score in backgroud of game
+  -make the score color not red or white
+
+-Once local highscore is beat change color of game
+  -snake color becomes white
+  -food is red
+  -background is blue
+  -and score display is white
+
+-add end of game display which displays score
+  -if highscore beat ask for a name to store on local db
+
+-add autonomous mode
+  -activated/deactivated when spacebar is hit
+  -uses a* pathfinding algo along with game strategies
+  

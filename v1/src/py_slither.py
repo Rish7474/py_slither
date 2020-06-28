@@ -12,7 +12,7 @@ score = 0
 #color constants
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-BLUE = (0,0,255)
+BLUE = (0,100,200)
 RED = (255,0,0)
 GREEN = (0,255,0)
 GRAY = (100,100,100)
@@ -24,12 +24,13 @@ def check_exit():
     return False
 
 def game_loop():
+    global score
     control = True
     snake = Snake(win_dim)
     grid_table = Hashtable(win_dim,20) #20px is the length of blocks
     grid_table.mark_arr(snake.get_chain())
     food = gen_food_block(grid_table)
-    
+
     while True:
         pygame.time.wait(50)#ms
         if check_exit():
@@ -49,6 +50,8 @@ def game_loop():
                 snake.change_direction(3)
 
             if snake.eat_food(food):
+                score+=100*snake.len()
+                time_cycle = 0
                 snake.grow(food)          
                # score+=1
                 if score == 400: #max score
@@ -73,7 +76,8 @@ def game_loop():
             
         else: #AI mode
             pass
-        
+        score-=5
+      
 def draw_snake(snake):
     for block in snake.get_chain():
         pygame.draw.rect(window,WHITE,(block.xpos(),block.ypos(),block.length(),block.width()))
@@ -82,9 +86,9 @@ def draw_food(food):
     pygame.draw.rect(window,RED,(food.xpos(),food.ypos(),food.length(),food.width()))
    
 def gen_food_block(grid_table):
-    openSpots = grid_table.get_unmarked()
-    randIndex = random.randint(0,len(openSpots))
-    coord = openSpots[randIndex]
+    open_spots = grid_table.get_unmarked()
+    rand_index = random.randint(0,len(open_spots)-1)
+    coord = open_spots[rand_index]
     return Block(coord[0],coord[1])    
 
 def draw_text(text, font, color, xpos, ypos):
@@ -103,7 +107,27 @@ def draw_menu(disp_font, title_font, button_start, button_score):
     draw_text('py_slither',title_font,WHITE,200,100)
     pygame.display.flip()
 
+def draw_end_screen(font):
+    global score
+    window.fill(BLACK)
+    score_txt = 'Final score: ' + str(score)
+    draw_text(score_txt,font,BLUE,200,270)
+    draw_text('Press spacebar to return to the menu',font,WHITE,90,300)
+    pygame.display.flip()
+
+def end_loop(font):
+    draw_end_screen(font)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    return True
+                elif event.key == pygame.K_ESCAPE:
+                    return False
 def main_menu():
+    global score
     disp_font = pygame.font.SysFont(None,30,1)
     title_font = pygame.font.SysFont(None,60)
     button_start = pygame.Rect(200,200,200,50)
@@ -113,11 +137,18 @@ def main_menu():
     mouse_clicked = False
     while True:
         mx, my = pygame.mouse.get_pos()
+        #if the mouse was clicked on start button
         if mouse_clicked and button_start.collidepoint((mx,my)):
-            status = game_loop()
-            if not status:
+            if not game_loop():
                 return
-            else:
+            else:#end of a game
+                if not end_loop(disp_font):
+                    return
+                #check if local score is beat highscore
+                #  if so ask for name and replaced the data in db with new one
+                #check if a global score was beat
+                #  if so ask for name and place in the right spot
+                score = 0
                 draw_menu(disp_font,title_font,button_start,button_score)
                 
         elif mouse_clicked and button_score.collidepoint((mx,my)):

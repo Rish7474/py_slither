@@ -13,10 +13,6 @@ autonomous mode will most likely use a pathfinding alogrithm where the head
 of the snake is the start point, the food is the end point, and the rest of the snake is the obstacle
 
 TODO:
--Create Scoring System
-  -score = sigma(10000 - time used to eat food)
-  -higher the score number, better the perfromance
-
 -Store local highscore using SQLite in db
   -display local highscore below game title in main menu
 

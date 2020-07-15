@@ -16,6 +16,52 @@ BLUE = (0,100,200)
 RED = (255,0,0)
 GREEN = (0,255,0)
 GRAY = (100,100,100)
+COLOR_INACTIVE = pygame.Color('lightskyblue3')
+COLOR_ACTIVE = pygame.Color('dodgerblue2')
+
+class InputBox:
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = COLOR_INACTIVE
+        self.text = text
+        FONT = pygame.font.SysFont(None, 32)
+        self.txt_surface = FONT.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            else:
+                self.active = False
+            # Change the current color of the input box.
+            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    print(self.text)
+                    #self.text = ''
+                    return self.text
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                # Re-render the text.
+                FONT = pygame.font.SysFont(None, 32)
+                self.txt_surface = FONT.render(self.text, True, self.color)
+
+    def update(self):
+        # Resize the box if the text is too long.
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pygame.draw.rect(screen, self.color, self.rect, 2)
 
 def check_exit():
     for event in pygame.event.get():
@@ -109,14 +155,36 @@ def draw_menu(disp_font, title_font, button_start, button_score):
 
 def draw_end_screen(font):
     global score
-    window.fill(BLACK)
-    score_txt = 'Final score: ' + str(score)
-    draw_text(score_txt,font,BLUE,200,270)
-    draw_text('Press spacebar to return to the menu',font,WHITE,90,300)
+
+    # input box operation to get name
+    scoreBox = InputBox(230, 140, 140, 32)
+
+    while True: 
+        for event in pygame.event.get():
+            name = scoreBox.handle_event(event)
+            if event.type == pygame.KEYDOWN:
+                #return if return key is pressed and user has inputed something
+                if event.key == pygame.K_RETURN and name:
+                    return name
+
+        window.fill(BLACK)
+        score_txt = 'Final score: ' + str(score)
+        draw_text(score_txt,font,BLUE,200,270)
+        draw_text('Press spacebar to return to the menu',font,WHITE,90,300)
+        draw_text('Your name:',font,WHITE,90,150)
+        scoreBox.update()
+        scoreBox.draw(window)
+        pygame.display.flip()
+
     pygame.display.flip()
+    return name
 
 def end_loop(font):
-    draw_end_screen(font)
+    name = draw_end_screen(font)
+    print("receive:")
+    print(name)
+    if name:
+        return True
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -125,8 +193,8 @@ def end_loop(font):
                 if event.key == pygame.K_SPACE:
                     return True
                 elif event.key == pygame.K_ESCAPE:
-                    return False
-def main_menu():
+                    return False  
+def main_menu(window):
     global score
     disp_font = pygame.font.SysFont(None,30,1)
     title_font = pygame.font.SysFont(None,60)
@@ -170,6 +238,6 @@ if __name__ == '__main__':
     pygame.init()
     window = pygame.display.set_mode(win_dim)
     pygame.display.set_caption('py_slither')
-    main_menu()
+    main_menu(window)
     pygame.quit()
 
